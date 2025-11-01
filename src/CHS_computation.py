@@ -108,7 +108,7 @@ def normalize_topic_scores_0_10(topic_scores_raw):
     return topic_scores_0_10
 
 def compute_CHS(topic_scores_0_to_10: dict[str, float]) -> float:
-	"""Weighted sum of topic scores (0–10) -> CHS (0–100)."""
+	"""Weighted sum of topic scores (0–10) -> CHS (0–10)."""
 	return sum(CHS_WEIGHTS[k] * topic_scores_0_to_10.get(k, 0.0) for k in CHS_WEIGHTS)
 
 
