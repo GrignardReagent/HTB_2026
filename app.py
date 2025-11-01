@@ -7,8 +7,8 @@ import nltk
 import datetime
 import math
 import re
-from src.classify_sentiment import classify_with_sentiment
-from src.CHS_computation import compute_topic_signed_scores, normalize_topic_scores_0_10, compute_CHS
+# from src.classify_sentiment import classify_with_sentiment
+# from src.CHS_computation import compute_topic_signed_scores, normalize_topic_scores_0_10, compute_CHS
 
 app = Flask(__name__)
 
