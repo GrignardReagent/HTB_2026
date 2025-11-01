@@ -95,20 +95,21 @@ def compute_topic_signed_scores(texts, classify_fn, topk_mean=3, threshold=0.25)
 
     return topic_scores_raw, details
 
-def normalize_topic_scores_0_100(topic_scores_raw):
-	"""
-	Map mean signed scores from [-1, 1] -> [0, 100].
-	  -1 -> 0, 0 -> 50, +1 -> 100
-	"""
-	topic_scores_0_100 = {
-		k: ((v + 1.0) / 2.0) * 100.0  # linear mapping
-		for k, v in topic_scores_raw.items()
-	}
-	return topic_scores_0_100
+def normalize_topic_scores_0_10(topic_scores_raw):
+    """
+    Map mean signed scores from [-1, 1] -> [0, 10], rounded to 1 decimal place.
+      -1 -> 0.0, 0 -> 5.0, +1 -> 10.0
+    """
+    # linear mapping to 0-10, rounded to 1 decimal place per topic
+    topic_scores_0_10 = {
+        k: round(((v + 1.0) / 2.0) * 10.0, 1)
+        for k, v in topic_scores_raw.items()
+    }
+    return topic_scores_0_10
 
-def compute_CHS(topic_scores_0_to_100: dict[str, float]) -> float:
-	"""Weighted sum of topic scores (0–100) -> CHS (0–100)."""
-	return sum(CHS_WEIGHTS[k] * topic_scores_0_to_100.get(k, 0.0) for k in CHS_WEIGHTS)
+def compute_CHS(topic_scores_0_to_10: dict[str, float]) -> float:
+	"""Weighted sum of topic scores (0–10) -> CHS (0–100)."""
+	return sum(CHS_WEIGHTS[k] * topic_scores_0_to_10.get(k, 0.0) for k in CHS_WEIGHTS)
 
 
 __all__ = [
@@ -116,7 +117,7 @@ __all__ = [
 	"OECD_TOPICS",
 	"_sentiment_to_sign",
 	"compute_topic_signed_scores",
-	"normalize_topic_scores_0_100",
+	"normalize_topic_scores_0_10",
 	"compute_CHS",
 ]
 
