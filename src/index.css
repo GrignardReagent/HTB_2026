@@ -1,0 +1,57 @@
+@import "leaflet/dist/leaflet.css";
+
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+@font-face {
+  font-family: libreFranklin;
+  src: url(LibreFranklin-ExtraLight.ttf);
+}
+
+.libre-franklin-header {
+  font-family: "Libre Franklin", sans-serif;
+  text-shadow: #000000;
+  font-optical-sizing: auto;
+  font-weight: 100;
+  font-style: normal;
+  text-align: center;
+}
+
+.libre-franklin-paragraph {
+  font-family: "Libre Franklin", sans-serif;
+  font-size:12pt;
+  font-optical-sizing: auto;
+  font-weight: 100;
+  font-style: normal;
+  text-align: center;
+}
+
+#cityPulse {
+  background: linear-gradient(90deg, #ff1b6b, #45caff);
+  -webkit-background-clip: text;
+  color: transparent;
+  display: inline-block;
+  text-shadow: #363636 1px 0 10px;
+  -webkit-animation: fadeinout 4s linear;
+  animation: fadeinout 4s linear;
+  animation-iteration-count: infinite;
+}
+
+@-webkit-keyframes fadeinout {
+  0%,100% { opacity: 0; }
+  40% { opacity: 0; }
+  50% { opacity: 1; }
+  60% { opacity: 0; }
+  70% { opacity: 1; }
+}
+
+@keyframes fadeinout {
+  0%,100% { opacity: 0; }
+  40% { opacity: 0; }
+  50% { opacity: 1; }
+  60% { opacity: 0; }
+  70% { opacity: 1; }
+}
