@@ -27,7 +27,7 @@ Legend
 
 const CityContext = createContext();
 
-const cityPost = (color = "#ffffff") =>
+const cityPost = (color = "#FF5532") =>
   L.divIcon({
     className: "tube-marker",
     html: `<div style="
@@ -40,7 +40,8 @@ const cityPost = (color = "#ffffff") =>
 function DisplayCityDetails() {
   const {cityChosen, selectedView} = useContext(CityContext);
   if (selectedView === "Sentiment" || 
-      selectedView === "SentimentClean"
+      selectedView === "SentimentClean" ||
+      selectedView === "Grouped"
   ) {
     if (!cityChosen || !cityChosen.overall_topic_scores_0_10) {
       return <div style={{ textAlign: "center", padding: "20px" }}>Select a city to view details</div>;
@@ -232,6 +233,7 @@ export default function App() {
               <option value={"SentimentClean"}>Sentiment (without noise)</option>
               <option value={"Sentiment"}>Sentiment</option>
               <option value={"Attention"}>Attention</option>
+              <option value={"Grouped"}>Grouped</option>
             </select>
           </div>
           <DisplayOtherDetails />
@@ -286,11 +288,11 @@ export default function App() {
                 </Popup>
               </Marker>
             );
-          })) : (cities.map((city) => {
+          })) : ( (selectedView === "SentimentClean") ? ((cities.map((city) => {
             var rainbow = new Rainbow();
             rainbow.setNumberRange(4, 6);
             rainbow.setSpectrum("red", "green");
-            if (city.overall_chs == 5) {
+            if (city.overall_chs === 5) {
               return null;
             }
             return (
@@ -307,7 +309,77 @@ export default function App() {
                 </Popup>
               </Marker>
             );
-          }))
+          }))) : (() => {
+              var rainbow = new Rainbow();
+              rainbow.setNumberRange(4, 6);
+              rainbow.setSpectrum("red", "green");
+              let scotland = {
+                city: "Scotland",
+                lat: 56.4907, // center latitude of Scotland
+                lng: -4.2026, // center longitude of Scotland
+                posts: [],
+                overall_topic_scores_0_10: {
+                  safety: 0,
+                  housing: 0,
+                  life_satisfaction: 0,
+                  access_to_services: 0,
+                  civic_engagement: 0,
+                  education: 0,
+                  jobs: 0,
+                  community: 0,
+                  environment: 0,
+                  income: 0,
+                  health: 0,
+                },
+                overall_chs: 0,
+              };
+              
+              var amountInScotland = 0;
+
+              cities.forEach(city => {
+              if (city.lat > 54.98 && city.lng > -4.67) {
+                amountInScotland += 1;
+                scotland.overall_topic_scores_0_10.safety += city.overall_topic_scores_0_10.safety || 5;
+                scotland.overall_topic_scores_0_10.housing += city.overall_topic_scores_0_10.housing || 5;
+                scotland.overall_topic_scores_0_10.life_satisfaction += city.overall_topic_scores_0_10.life_satisfaction || 5;
+                scotland.overall_topic_scores_0_10.access_to_services += city.overall_topic_scores_0_10.access_to_services || 5;
+                scotland.overall_topic_scores_0_10.civic_engagement += city.overall_topic_scores_0_10.civic_engagement || 5;
+                scotland.overall_topic_scores_0_10.education += city.overall_topic_scores_0_10.education || 5;
+                scotland.overall_topic_scores_0_10.jobs += city.overall_topic_scores_0_10.jobs || 5;
+                scotland.overall_topic_scores_0_10.community += city.overall_topic_scores_0_10.community || 5;
+                scotland.overall_topic_scores_0_10.environment += city.overall_topic_scores_0_10.environment || 5;
+                scotland.overall_topic_scores_0_10.income += city.overall_topic_scores_0_10.income || 5;
+                scotland.overall_topic_scores_0_10.health += city.overall_topic_scores_0_10.health || 5;
+                scotland.overall_chs += city.overall_topic_scores_0_10.overall_chs || 5;
+              }})
+              scotland.overall_topic_scores_0_10.safety /= amountInScotland;
+              scotland.overall_topic_scores_0_10.housing /= amountInScotland;
+              scotland.overall_topic_scores_0_10.life_satisfaction /= amountInScotland;
+              scotland.overall_topic_scores_0_10.access_to_services /= amountInScotland;
+              scotland.overall_topic_scores_0_10.civic_engagement /= amountInScotland;
+              scotland.overall_topic_scores_0_10.education /= amountInScotland;
+              scotland.overall_topic_scores_0_10.jobs /= amountInScotland;
+              scotland.overall_topic_scores_0_10.community /= amountInScotland;
+              scotland.overall_topic_scores_0_10.environment /= amountInScotland;
+              scotland.overall_topic_scores_0_10.income /= amountInScotland;
+              scotland.overall_topic_scores_0_10.health /= amountInScotland;
+              scotland.overall_chs /= amountInScotland;
+            return (
+              <Marker
+                position={[scotland.lat, scotland.lng]}
+                icon={cityPost("#" + rainbow.colorAt(scotland.overall_chs) + "99")}
+                eventHandlers={{
+                  click: () => {
+                    setCityChosen(scotland);
+                  }
+                }}>
+                <Popup>
+                  {scotland.city}
+                </Popup>
+              </Marker>
+            )
+          }
+          )())
           )
           }
         </MapContainer>
