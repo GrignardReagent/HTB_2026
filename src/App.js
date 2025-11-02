@@ -164,7 +164,7 @@ function DisplayCityDetails() {
 }
 
 function DisplayOtherDetails() {
-  const {cityChosen, selectedDetail, setSelectedDetail} = useContext(CityContext);
+  const {cityChosen, selectedDetail, selectedView, setSelectedDetail} = useContext(CityContext);
   const [positiveContributions, setPositiveContributions] = useState([]);
   const [negativeContributions, setNegativeContributions] = useState([]);
   useEffect(() => {
@@ -195,7 +195,7 @@ function DisplayOtherDetails() {
       transition: "all 0.3s ease",
     }}>
     <DisplayCityDetails />
-    {cityChosen.city && cityChosen.overall_chs && (
+    {cityChosen.city && cityChosen.overall_chs && (selectedView === "SentimentClean" || selectedView === "Sentiment") && (
       <div style={{textAlign: "center", padding: "10px", color: "#555"}}>
         <div>
           <button onClick={() => setSelectedDetail("safety")}>Safety</button>
@@ -261,6 +261,7 @@ export default function App() {
 
   const handleViewChange = (newView) => {
     setSelectedView(newView);
+    setSelectedDetail("");
   };
 
   return (
