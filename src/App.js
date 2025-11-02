@@ -16,6 +16,9 @@ import data from "./api_1_analysis_batched_2.json";
 import attentionDataSource from "./api_1.json";
 import Rainbow from "rainbowvis.js";
 
+import communityImg from './community.png';
+import communityImg2 from './community2.png';
+
 ChartJS.register(
 CategoryScale,
 LinearScale,
@@ -161,10 +164,27 @@ function DisplayCityDetails() {
 }
 
 function DisplayOtherDetails() {
+  const {cityChosen, selectedDetail, setSelectedDetail} = useContext(CityContext);
+  const [positiveContributions, setPositiveContributions] = useState([]);
+  const [negativeContributions, setNegativeContributions] = useState([]);
+  useEffect(() => {
+    setPositiveContributions([]);
+    setNegativeContributions([]);
+    if (cityChosen.city && selectedDetail) {
+      for (const post of cityChosen.timeseries) {
+        console.log(post.topic_scores_0_10);
+        if (post.topic_scores_0_10[selectedDetail] > 6) {
+          setPositiveContributions(prev => [...prev, post]);
+        } else if (post.topic_scores_0_10[selectedDetail] < 4) {
+          setNegativeContributions(prev => [...prev, post]);
+        }
+      }
+    }
+  }, [selectedDetail, cityChosen]);
   return (
     <div id="results" style={{
       width: "30vw",
-      height: "60vh",
+      height: "50vh",
       background: "linear-gradient(90deg, #ffffff, #b8d7e0ff)",
       marginRight: "100px",
       borderRadius: "16px",
@@ -175,6 +195,53 @@ function DisplayOtherDetails() {
       transition: "all 0.3s ease",
     }}>
     <DisplayCityDetails />
+    {cityChosen.city && cityChosen.overall_chs && (
+      <div style={{textAlign: "center", padding: "10px", color: "#555"}}>
+        <div>
+          <button onClick={() => setSelectedDetail("safety")}>Safety</button>
+          <button onClick={() => setSelectedDetail("housing")}>Housing</button>
+          <button onClick={() => setSelectedDetail("life_satisfaction")}>Life satisfaction</button>
+          <button onClick={() => setSelectedDetail("access_to_services")}>Access to services</button>
+          <button onClick={() => setSelectedDetail("civic_engagement")}>Civic Engagement</button>
+          <button onClick={() => setSelectedDetail("education")}>Education</button>
+          <button onClick={() => setSelectedDetail("jobs")}>Jobs</button>
+          <button onClick={() => setSelectedDetail("community")}>Community</button>
+          <button onClick={() => setSelectedDetail("environment")}>Environment</button>
+          <button onClick={() => setSelectedDetail("income")}>Income</button>
+          <button onClick={() => setSelectedDetail("health")}>Health</button>
+        </div>
+        {selectedDetail && (
+          <div style={{marginTop: "10px"}}>
+            <h4>Posts contributing positively to {selectedDetail}:</h4>
+            <ul style={{maxHeight: "100px", overflowY: "auto", textAlign: "left"}}>
+              {positiveContributions.length > 0 ? positiveContributions.map((post, index) => (
+                <li key={index} style={{marginBottom: "5px"}}>
+                  <strong>{new Date(post.posted_at_timestamp * 1000).toLocaleDateString()}:</strong> {post.text}
+                </li>
+              )) : <li>No positive contributions found.</li>}
+            </ul>
+            <h4>Posts contributing negatively to {selectedDetail}:</h4>
+            <ul style={{maxHeight: "100px", overflowY: "auto", textAlign: "left"}}>
+              {negativeContributions.length > 0 ? negativeContributions.map((post, index) => (
+                <li key={index} style={{marginBottom: "5px"}}>
+                  <strong>{new Date(post.posted_at_timestamp * 1000).toLocaleDateString()}:</strong> {post.text}
+                </li>
+              )) : <li>No negative contributions found.</li>}
+            </ul>
+          </div>
+        )}
+        {cityChosen.city === 'Crowborough' && selectedDetail === 'community' && (
+            <>
+              <div>
+                <img src={communityImg} alt='Community SHAP Explanation' style={{ width: '100%', marginTop: '10px' }} />
+              </div>
+              <div>
+                <img src={communityImg2} alt='Community SHAP Explanation 2' style={{ width: '100%', marginTop: '10px' }} />
+              </div>
+            </>
+        )}
+      </div>
+    )}
   </div>
   )
 }
@@ -184,7 +251,8 @@ export default function App() {
   const initialMapPosition = [55, -1];
   const [cities, setCities] = useState([]);
   const [attentionData, setAttentionData] = useState([]);
-  const [selectedView, setSelectedView] = useState("SentimentClean");
+  const [selectedView, setSelectedView] = useState("Sentiment");
+  const [selectedDetail, setSelectedDetail] = useState("");
 
   useEffect(() => {
     setCities(data);
@@ -196,7 +264,7 @@ export default function App() {
   };
 
   return (
-    <CityContext.Provider value={{ cityChosen, selectedView }}>
+    <CityContext.Provider value={{ cityChosen, setCityChosen, selectedView, setSelectedView, selectedDetail, setSelectedDetail }}>
       <div
         style={{
           display: "flex",
@@ -263,6 +331,7 @@ export default function App() {
                 eventHandlers={{
                   click: () => {
                     setCityChosen(city);
+                    setSelectedDetail("");
                   }
                 }}>
                 <Popup>
