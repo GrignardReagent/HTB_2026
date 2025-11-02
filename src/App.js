@@ -33,7 +33,7 @@ const cityPost = (color = "#ffffff") =>
       background:${color};
       width:12px;height:12px;
       border-radius:50%;
-      border:2px solid white;"></div>`,
+      border:none;"></div>`,
   });
 
 function DisplayCityDetails() {
@@ -136,7 +136,7 @@ function DisplayOtherDetails() {
   return (
     <div id="results" style={{
       width: "30vw",
-      height: "50vh",
+      height: "70vh",
       background: "linear-gradient(90deg, #ffffff, #b8d7e0ff)",
       marginRight: "100px",
       borderRadius: "16px",
@@ -168,7 +168,7 @@ export default function App() {
     style={{
       display: "flex",
       justifyContent: "center",
-      alignItems: "center",
+      // alignItems: "center",
       height: "50vh", 
       width: "100vw"
     }}
@@ -179,7 +179,7 @@ export default function App() {
       zoom={6.5}
       style={{
         width: "50%",
-        height: "50vh",
+        height: "70vh",
         borderRadius: "12px", 
         boxShadow: "0 4px 12px rgba(0,0,0,0.2)",
       }}
@@ -196,7 +196,7 @@ export default function App() {
         return (
           <Marker 
             position={[city.lat, city.lng]}
-            icon={cityPost("#" + rainbow.colorAt(city.overall_chs))}
+            icon={cityPost("#" + rainbow.colorAt(city.overall_chs) + "99")}
             eventHandlers={{
               click: () => {
                 setCityChosen(city);
