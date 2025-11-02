@@ -19,6 +19,7 @@ from datetime import datetime
 import json
 import argparse
 import re
+import os
 
 try:
     from tqdm import tqdm
@@ -36,6 +37,7 @@ DATA_PATH = ROOT / 'api_1.json'
 OUT_DIR = ROOT / 'results'
 OUT_DIR.mkdir(exist_ok=True)
 OUT_FILE = OUT_DIR / 'api_1_analysis_2mn.json'
+OUT_FILE_PARTIAL = OUT_DIR / (OUT_FILE.stem + '.partial.json')
 
 
 def ts_to_iso(ts):
@@ -148,8 +150,11 @@ def main(args):
     print('Sampling posts from the two-million bluesky dataset (this may take some time)')
     sampled_posts = get_city_messages(args.n_samples, cities=city_names)
     print(f"Retrieved {len(sampled_posts)} sampled posts")
-
-    results_batch = []
+    # stream results into a partial file so we persist progress as we go
+    first = True
+    preview = []
+    fout = open(OUT_FILE_PARTIAL, 'w', encoding='utf-8')
+    fout.write('[\n')
 
     # For each city, filter sampled posts that mention that city and run analysis
     for city in tqdm(city_names, desc='Cities (sampled)'):
@@ -173,18 +178,36 @@ def main(args):
             topic_0_10 = {t: 0.0 for t in OECD_TOPICS}
             chs = 0.0
 
-        results_batch.append({
+        out_obj = {
             'city': city,
             'n_sampled_posts': len(texts_all),
             'overall_topic_scores_0_10': topic_0_10,
             'overall_chs': chs,
-        })
+        }
 
-    with open(OUT_FILE, 'w', encoding='utf-8') as f:
-        json.dump(results_batch, f, ensure_ascii=False, indent=2)
+        # write comma-separated JSON objects into the array
+        if not first:
+            fout.write(',\n')
+        json.dump(out_obj, fout, ensure_ascii=False)
+        fout.flush()
+        try:
+            os.fsync(fout.fileno())
+        except Exception:
+            pass
+        first = False
 
-    # brief summary
-    for r in results_batch[:20]:
+        if len(preview) < 20:
+            preview.append(out_obj)
+    # close JSON array and atomically move into final file
+    fout.write('\n]\n')
+    fout.close()
+    try:
+        os.replace(OUT_FILE_PARTIAL, OUT_FILE)
+    except Exception:
+        os.rename(OUT_FILE_PARTIAL, OUT_FILE)
+
+    # brief summary (first few cities processed)
+    for r in preview:
         print(r['city'], 'n_sampled_posts=', r['n_sampled_posts'], 'overall_chs=', round(r['overall_chs'], 2))
 
 
