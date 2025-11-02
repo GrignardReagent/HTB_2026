@@ -27,12 +27,12 @@ Legend
 
 const CityContext = createContext();
 
-const cityPost = (color = "#FF5532") =>
+const cityPost = (color = "#FF5532", size = "12px") =>
   L.divIcon({
     className: "tube-marker",
     html: `<div style="
       background:${color};
-      width:12px;height:12px;
+      width:${size};height:${size};
       border-radius:50%;
       border:none;"></div>`,
   });
@@ -367,7 +367,7 @@ export default function App() {
             return (
               <Marker
                 position={[scotland.lat, scotland.lng]}
-                icon={cityPost("#" + rainbow.colorAt(scotland.overall_chs) + "99")}
+                icon={cityPost("#" + rainbow.colorAt(scotland.overall_chs) + "99", "20px")}
                 eventHandlers={{
                   click: () => {
                     setCityChosen(scotland);
