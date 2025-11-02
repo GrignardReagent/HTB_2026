@@ -10,6 +10,7 @@ from collections import defaultdict
 from datetime import datetime
 import json
 import argparse
+import os
 
 try:
     from tqdm import tqdm
@@ -24,6 +25,7 @@ DATA_PATH = ROOT / 'api_1.json'
 OUT_DIR = ROOT / 'results'
 OUT_DIR.mkdir(exist_ok=True)
 OUT_FILE = OUT_DIR / 'api_1_analysis_batched_2.json'
+OUT_FILE_PARTIAL = OUT_DIR / (OUT_FILE.stem + '.partial.json')
 
 def ts_to_iso(ts):
     try:
@@ -137,7 +139,13 @@ def main(args):
     with open(DATA_PATH, 'r', encoding='utf-8') as f:
         data = json.load(f)
 
-    results_batch = []
+    # stream results to a partial output file so we can add iteratively
+    # We write a JSON array incrementally into OUT_FILE_PARTIAL and atomically
+    # rename it to OUT_FILE when finished.
+    first = True
+    preview = []  # keep a small preview of first results for summary
+    fout = open(OUT_FILE_PARTIAL, 'w', encoding='utf-8')
+    fout.write('[\n')
 
     for city in tqdm(data, desc='Cities (batch)'):
         city_name = city.get('city')
@@ -191,7 +199,7 @@ def main(args):
             chs = 0.0
             timeseries = []
 
-        results_batch.append({
+        out_obj = {
             'city': city_name,
             'lat': city.get('lat'),
             'lng': city.get('lng'),
@@ -199,13 +207,34 @@ def main(args):
             'overall_topic_scores_0_10': topic_0_10,
             'overall_chs': chs,
             'timeseries': timeseries,
-        })
+        }
 
-    with open(OUT_FILE, 'w', encoding='utf-8') as f:
-        json.dump(results_batch, f, ensure_ascii=False, indent=2)
+        # write comma-separated JSON objects into the array in the partial file
+        if not first:
+            fout.write(',\n')
+        json.dump(out_obj, fout, ensure_ascii=False)
+        fout.flush()
+        try:
+            os.fsync(fout.fileno())
+        except Exception:
+            # fsync may not be available on some platforms; ignore if it fails
+            pass
+        first = False
 
-    # brief summary
-    for r in results_batch[:5]:
+        if len(preview) < 5:
+            preview.append(out_obj)
+
+    # close out the JSON array and atomically move the partial file into place
+    fout.write('\n]\n')
+    fout.close()
+    try:
+        os.replace(OUT_FILE_PARTIAL, OUT_FILE)
+    except Exception:
+        # fallback to rename if replace is not available
+        os.rename(OUT_FILE_PARTIAL, OUT_FILE)
+
+    # brief summary (first few cities processed)
+    for r in preview:
         print(r['city'], 'n_posts=', r['n_posts'], 'overall_chs=', round(r['overall_chs'], 1))
 
 
