@@ -13,6 +13,7 @@ Legend,
 import { Bar } from "react-chartjs-2";
 
 import data from "./api_1_analysis.json";
+import attentionDataSource from "./api_1.json";
 import Rainbow from "rainbowvis.js";
 
 ChartJS.register(
@@ -33,41 +34,42 @@ const cityPost = (color = "#ffffff") =>
       background:${color};
       width:12px;height:12px;
       border-radius:50%;
-      border:2px solid white;"></div>`,
+      border:none;"></div>`,
   });
 
 function DisplayCityDetails() {
-  const {cityChosen} = useContext(CityContext);
-  if (!cityChosen || !cityChosen.overall_topic_scores_0_10) {
-    return <div style={{ textAlign: "center", padding: "20px" }}>Select a city to view details</div>;
-  }
-  const options = {
-    indexAxis: "y",
-    responsive: true,
-    maintainAspectRatio: false,
-    layout: {
-      padding: {
-        left: 10,
-        right: 90,
-        top: 10,
-        bottom: 10,
+  const {cityChosen, selectedView} = useContext(CityContext);
+  if (selectedView === "Sentiment") {
+    if (!cityChosen || !cityChosen.overall_topic_scores_0_10) {
+      return <div style={{ textAlign: "center", padding: "20px" }}>Select a city to view details</div>;
+    }
+    const options = {
+      indexAxis: "y",
+      responsive: true,
+      maintainAspectRatio: false,
+      layout: {
+        padding: {
+          left: 10,
+          right: 90,
+          top: 10,
+          bottom: 10,
+        },
       },
-    },
-    plugins: {
-      legend: {
-        display: false,
+      plugins: {
+        legend: {
+          display: false,
+        },
+        tooltip: {
+          enabled: true,
+        },
       },
-      tooltip: {
-        enabled: true,
+      scales: {
+        x: {
+          beginAtZero: true,
+          min: 0,
+          max: 10
+        },
       },
-    },
-    scales: {
-      x: {
-        beginAtZero: true,
-        min: 0,
-        max: 10
-      },
-    },
       y: {
         ticks: {
           autoSkip: false,
@@ -76,67 +78,90 @@ function DisplayCityDetails() {
           },
         },
       },
-  };
-  const scores = cityChosen.overall_topic_scores_0_10;
-  const data = {
-    labels: ["Saftey", 
-             "Housing", 
-             "Life satisfaction", 
-             "Access to services", 
-             "Civic Engagement", 
-             "Education", 
-             "Jobs", 
-             "Community", 
-             "Environment", 
-             "Income", 
-             "Health"],
-    datasets: [
-    {
-      label: "Votes",
-      data: [scores.safety, 
-             scores.housing,
-             scores.life_satisfaction, 
-             scores.access_to_services, 
-             scores.civic_engagement, 
-             scores.education, 
-             scores.jobs,
-             scores.community, 
-             scores.environment,
-             scores.income, 
-             scores.health],
-      backgroundColor: [
-      "rgba(255, 99, 132, 0.5)",
-      "rgba(54, 162, 235, 0.5)",
-      "rgba(255, 206, 86, 0.5)",
-      "rgba(75, 192, 192, 0.5)",
-      "rgba(153, 102, 255, 0.5)",
+    };
+    const scores = cityChosen.overall_topic_scores_0_10;
+    const data = {
+      labels: ["Saftey",
+        "Housing",
+        "Life satisfaction",
+        "Access to services",
+        "Civic Engagement",
+        "Education",
+        "Jobs",
+        "Community",
+        "Environment",
+        "Income",
+        "Health"],
+      datasets: [
+        {
+          label: "Votes",
+          data: [scores.safety,
+          scores.housing,
+          scores.life_satisfaction,
+          scores.access_to_services,
+          scores.civic_engagement,
+          scores.education,
+          scores.jobs,
+          scores.community,
+          scores.environment,
+          scores.income,
+          scores.health],
+          backgroundColor: [
+            "rgba(255, 99, 132, 0.5)",
+            "rgba(54, 162, 235, 0.5)",
+            "rgba(255, 206, 86, 0.5)",
+            "rgba(75, 192, 192, 0.5)",
+            "rgba(153, 102, 255, 0.5)",
+          ],
+          borderColor: [
+            "rgba(255, 99, 132, 1)",
+            "rgba(54, 162, 235, 1)",
+            "rgba(255, 206, 86, 1)",
+            "rgba(75, 192, 192, 1)",
+            "rgba(153, 102, 255, 1)",
+          ],
+          borderWidth: 1,
+        },
       ],
-      borderColor: [
-      "rgba(255, 99, 132, 1)",
-      "rgba(54, 162, 235, 1)",
-      "rgba(255, 206, 86, 1)",
-      "rgba(75, 192, 192, 1)",
-      "rgba(153, 102, 255, 1)",
-      ],
-      borderWidth: 1,
-      },
-    ],
-  };
-  return (
-    <div>
-      <h2 style={{textAlign:"center"}}>{cityChosen.city}</h2>
-      <div style={{margin:"3vh", height:"40vh", width:"100%", background: "transparent"}}>
-        <Bar options={options} data={data} />
+    };
+    return (
+      <div>
+        <h2 style={{ textAlign: "center" }}>{cityChosen.city}</h2>
+        <div style={{ margin: "3vh", height: "40vh", width: "100%", background: "transparent" }}>
+          <Bar options={options} data={data} />
+        </div>
       </div>
-    </div>
-  )
+    )
+  } else {
+    if (!cityChosen.city) {
+      return <div style={{ textAlign: "center", padding: "20px" }}>Select a city to view details</div>;
+    } else {
+      return (
+        <div style={{ padding: "20px" }}>
+          <h2 style={{ textAlign: "center" }}>{cityChosen.city}</h2>
+          <h3>Recent Posts Mentioning {cityChosen.city}:</h3>
+          <ul>
+            {cityChosen.posts && cityChosen.posts.length > 0 ? (
+              cityChosen.posts.slice(-5).reverse().map((post, index) => (
+                <li key={index} style={{ marginBottom: "10px" }}>
+                  <strong>{new Date(post.posted_at_timestamp * 1000).toLocaleString()}:</strong> {post.text}
+                </li>
+              ))
+            ) : (
+              <li>No recent posts available.</li>
+            )}
+          </ul>
+        </div>
+      );
+    }
+  }
 }
 
 function DisplayOtherDetails() {
   return (
     <div id="results" style={{
       width: "30vw",
-      height: "50vh",
+      height: "60vh",
       background: "linear-gradient(90deg, #ffffff, #b8d7e0ff)",
       marginRight: "100px",
       borderRadius: "16px",
@@ -155,61 +180,112 @@ export default function App() {
   const [cityChosen, setCityChosen] = useState({});
   const initialMapPosition = [55, -1];
   const [cities, setCities] = useState([]);
+  const [attentionData, setAttentionData] = useState([]);
+  const [selectedView, setSelectedView] = useState("Sentiment");
 
   useEffect(() => {
     setCities(data);
+    setAttentionData(attentionDataSource);
   }, [])
 
-  
+  const handleViewChange = (newView) => {
+    setSelectedView(newView);
+  };
 
   return (
-    <CityContext.Provider value={{cityChosen, setCityChosen}}>
-    <div
-    style={{
-      display: "flex",
-      justifyContent: "center",
-      alignItems: "center",
-      height: "50vh", 
-      width: "100vw"
-    }}
-    >
-    <DisplayOtherDetails />
-    <MapContainer
-      center={initialMapPosition}
-      zoom={6.5}
-      style={{
-        width: "50%",
-        height: "50vh",
-        borderRadius: "12px", 
-        boxShadow: "0 4px 12px rgba(0,0,0,0.2)",
-      }}
-    >
-      <TileLayer
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-      />      
-      
-      {cities.map((city) => {
-        var rainbow = new Rainbow();
-        rainbow.setNumberRange(0, 10);
-        rainbow.setSpectrum("red", "green");
+    <CityContext.Provider value={{ cityChosen, selectedView }}>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          // alignItems: "center",
+          height: "50vh",
+          width: "100vw"
+        }}
+      >
+        <div>
+          <div id="results" style={{
+            width: "30vw",
+            height: "5vh",
+            background: "linear-gradient(90deg, #ffffff, #b8d7e0ff)",
+            marginRight: "100px",
+            borderRadius: "16px",
+            boxShadow: "0 6px 16px rgba(0, 0, 0, 0.15)",
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "space-between",
+            transition: "all 0.3s ease",
+            textAlign: "center",
+            paddingTop: "10px",
+            marginBottom: "10px",
+          }}>
+            <select
+              style={{padding: "8px", borderRadius: "8px", border: "1px solid #ccc", fontSize: "16px", margin: "0 10px"}}
+              onChange={(e) => {
+                const selectedValue = e.target.value;
+                handleViewChange(selectedValue);
+              }}
+              defaultValue={"Sentiment"}
+            >
+              <option value={"Sentiment"}>Sentiment</option>
+              <option value={"Attention"}>Attention</option>
+            </select>
+          </div>
+          <DisplayOtherDetails />
+        </div>
+        <MapContainer
+          center={initialMapPosition}
+          zoom={6.5}
+          style={{
+            width: "50%",
+            height: "70vh",
+            borderRadius: "12px",
+            boxShadow: "0 4px 12px rgba(0,0,0,0.2)",
+          }}
+        >
+          <TileLayer
+            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          />
 
-        return (
-          <Marker 
-            position={[city.lat, city.lng]}
-            icon={cityPost("#" + rainbow.colorAt(city.overall_chs))}
-            eventHandlers={{
-              click: () => {
-                setCityChosen(city);
-              }
-            }}>
-              <Popup>
-                {city.city}
-              </Popup>
-          </Marker>
-        );
-      })}
-    </MapContainer>
-  </div>
-  </CityContext.Provider>
+          {selectedView === "Sentiment" ? cities.map((city) => {
+            var rainbow = new Rainbow();
+            rainbow.setNumberRange(0, 10);
+            rainbow.setSpectrum("red", "green");
+            return (
+              <Marker
+                position={[city.lat, city.lng]}
+                icon={cityPost("#" + rainbow.colorAt(city.overall_chs) + "99")}
+                eventHandlers={{
+                  click: () => {
+                    setCityChosen(city);
+                  }
+                }}>
+                <Popup>
+                  {city.city}
+                </Popup>
+              </Marker>
+            );
+          }) : attentionData.map((city) => {
+            var rainbow = new Rainbow();
+            rainbow.setNumberRange(0, attentionData.map(c => Math.log(c.posts.length)).reduce((a, b) => Math.max(a, b), 0));
+            rainbow.setSpectrum("white", "blue");
+            return (
+              <Marker
+                position={[city.lat, city.lng]}
+                icon={cityPost("#" + rainbow.colorAt(Math.log(city.posts.length)) + "80")}
+                eventHandlers={{
+                  click: () => {
+                    setCityChosen(city);
+                  }
+                }}>
+                <Popup>
+                  <div>{city.city}</div>
+                </Popup>
+              </Marker>
+            );
+          })}
+        </MapContainer>
+      </div>
+    </CityContext.Provider>
   );
 }
