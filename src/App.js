@@ -39,7 +39,9 @@ const cityPost = (color = "#ffffff") =>
 
 function DisplayCityDetails() {
   const {cityChosen, selectedView} = useContext(CityContext);
-  if (selectedView === "Sentiment") {
+  if (selectedView === "Sentiment" || 
+      selectedView === "SentimentClean"
+  ) {
     if (!cityChosen || !cityChosen.overall_topic_scores_0_10) {
       return <div style={{ textAlign: "center", padding: "20px" }}>Select a city to view details</div>;
     }
@@ -181,7 +183,7 @@ export default function App() {
   const initialMapPosition = [55, -1];
   const [cities, setCities] = useState([]);
   const [attentionData, setAttentionData] = useState([]);
-  const [selectedView, setSelectedView] = useState("Sentiment");
+  const [selectedView, setSelectedView] = useState("SentimentClean");
 
   useEffect(() => {
     setCities(data);
@@ -225,8 +227,9 @@ export default function App() {
                 const selectedValue = e.target.value;
                 handleViewChange(selectedValue);
               }}
-              defaultValue={"Sentiment"}
+              defaultValue={"SentimentClean"}
             >
+              <option value={"SentimentClean"}>Sentiment (without noise)</option>
               <option value={"Sentiment"}>Sentiment</option>
               <option value={"Attention"}>Attention</option>
             </select>
@@ -249,7 +252,7 @@ export default function App() {
 
           {selectedView === "Sentiment" ? cities.map((city) => {
             var rainbow = new Rainbow();
-            rainbow.setNumberRange(3.5, 6.5);
+            rainbow.setNumberRange(4, 6);
             rainbow.setSpectrum("red", "green");
             return (
               <Marker
@@ -265,7 +268,7 @@ export default function App() {
                 </Popup>
               </Marker>
             );
-          }) : attentionData.map((city) => {
+          }) : ((selectedView === "Attention") ? (attentionData.map((city) => {
             var rainbow = new Rainbow();
             rainbow.setNumberRange(0, attentionData.map(c => Math.log(c.posts.length)).reduce((a, b) => Math.max(a, b), 0));
             rainbow.setSpectrum("white", "blue");
@@ -283,7 +286,30 @@ export default function App() {
                 </Popup>
               </Marker>
             );
-          })}
+          })) : (cities.map((city) => {
+            var rainbow = new Rainbow();
+            rainbow.setNumberRange(4, 6);
+            rainbow.setSpectrum("red", "green");
+            if (city.overall_chs == 5) {
+              return null;
+            }
+            return (
+              <Marker
+                position={[city.lat, city.lng]}
+                icon={cityPost("#" + rainbow.colorAt(city.overall_chs) + "99")}
+                eventHandlers={{
+                  click: () => {
+                    setCityChosen(city);
+                  }
+                }}>
+                <Popup>
+                  {city.city}
+                </Popup>
+              </Marker>
+            );
+          }))
+          )
+          }
         </MapContainer>
       </div>
     </CityContext.Provider>
