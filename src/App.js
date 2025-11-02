@@ -163,53 +163,53 @@ export default function App() {
   
 
   return (
-    <CityContext.Provider value={{cityChosen, setCityChosen}}>
-    <div
-    style={{
-      display: "flex",
-      justifyContent: "center",
-      // alignItems: "center",
-      height: "50vh", 
-      width: "100vw"
-    }}
-    >
-    <DisplayOtherDetails />
-    <MapContainer
-      center={initialMapPosition}
-      zoom={6.5}
-      style={{
-        width: "50%",
-        height: "70vh",
-        borderRadius: "12px", 
-        boxShadow: "0 4px 12px rgba(0,0,0,0.2)",
-      }}
-    >
-      <TileLayer
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-      />      
-      
-      {cities.map((city) => {
-        var rainbow = new Rainbow();
-        rainbow.setNumberRange(0, 10);
-        rainbow.setSpectrum("red", "green");
+    <CityContext.Provider value={{ cityChosen, setCityChosen }}>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          // alignItems: "center",
+          height: "50vh",
+          width: "100vw"
+        }}
+      >
+        <DisplayOtherDetails />
+        <MapContainer
+          center={initialMapPosition}
+          zoom={6.5}
+          style={{
+            width: "50%",
+            height: "70vh",
+            borderRadius: "12px",
+            boxShadow: "0 4px 12px rgba(0,0,0,0.2)",
+          }}
+        >
+          <TileLayer
+            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          />
 
-        return (
-          <Marker 
-            position={[city.lat, city.lng]}
-            icon={cityPost("#" + rainbow.colorAt(city.overall_chs) + "99")}
-            eventHandlers={{
-              click: () => {
-                setCityChosen(city);
-              }
-            }}>
-              <Popup>
-                {city.city}
-              </Popup>
-          </Marker>
-        );
-      })}
-    </MapContainer>
-  </div>
-  </CityContext.Provider>
+          {cities.map((city) => {
+            var rainbow = new Rainbow();
+            rainbow.setNumberRange(0, 10);
+            rainbow.setSpectrum("red", "green");
+
+            return (
+              <Marker
+                position={[city.lat, city.lng]}
+                icon={cityPost("#" + rainbow.colorAt(city.overall_chs) + "99")}
+                eventHandlers={{
+                  click: () => {
+                    setCityChosen(city);
+                  }
+                }}>
+                <Popup>
+                  {city.city}
+                </Popup>
+              </Marker>
+            );
+          })}
+        </MapContainer>
+      </div>
+    </CityContext.Provider>
   );
 }
