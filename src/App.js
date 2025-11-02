@@ -313,6 +313,7 @@ export default function App() {
               var rainbow = new Rainbow();
               rainbow.setNumberRange(4, 6);
               rainbow.setSpectrum("red", "green");
+
               let scotland = {
                 city: "Scotland",
                 lat: 56.4907, // center latitude of Scotland
@@ -333,11 +334,74 @@ export default function App() {
                 },
                 overall_chs: 0,
               };
+              let ireland = {
+                city: "Northern Ireland",
+                lat: 54.7877, // center latitude of N Ireland
+                lng: -6.4923, // center longitude of N Ireland
+                posts: [],
+                overall_topic_scores_0_10: {
+                  safety: 0,
+                  housing: 0,
+                  life_satisfaction: 0,
+                  access_to_services: 0,
+                  civic_engagement: 0,
+                  education: 0,
+                  jobs: 0,
+                  community: 0,
+                  environment: 0,
+                  income: 0,
+                  health: 0,
+                },
+                overall_chs: 0,
+              };
+              let wales = {
+                city: "Wales",
+                lat: 52.33, // center latitude of Wales
+                lng: -3.77, // center longitude of Wales
+                posts: [],
+                overall_topic_scores_0_10: {
+                  safety: 0,
+                  housing: 0,
+                  life_satisfaction: 0,
+                  access_to_services: 0,
+                  civic_engagement: 0,
+                  education: 0,
+                  jobs: 0,
+                  community: 0,
+                  environment: 0,
+                  income: 0,
+                  health: 0,
+                },
+                overall_chs: 0,
+              };
+              let england = {
+                city: "England",
+                lat: 52.95748, // center latitude of England
+                lng: -1.259297, // center longitude of England
+                posts: [],
+                overall_topic_scores_0_10: {
+                  safety: 0,
+                  housing: 0,
+                  life_satisfaction: 0,
+                  access_to_services: 0,
+                  civic_engagement: 0,
+                  education: 0,
+                  jobs: 0,
+                  community: 0,
+                  environment: 0,
+                  income: 0,
+                  health: 0,
+                },
+                overall_chs: 0,
+              };
               
               var amountInScotland = 0;
+              var amountInIreland = 0;
+              var amountInWales = 0;
+              var amountInEngland = 0;
 
               cities.forEach(city => {
-              if (city.lat > 54.98 && city.lng > -4.67) {
+              if (city.lat > 54.4 && city.lng > -4.67) {
                 amountInScotland += 1;
                 scotland.overall_topic_scores_0_10.safety += city.overall_topic_scores_0_10.safety || 5;
                 scotland.overall_topic_scores_0_10.housing += city.overall_topic_scores_0_10.housing || 5;
@@ -351,7 +415,54 @@ export default function App() {
                 scotland.overall_topic_scores_0_10.income += city.overall_topic_scores_0_10.income || 5;
                 scotland.overall_topic_scores_0_10.health += city.overall_topic_scores_0_10.health || 5;
                 scotland.overall_chs += city.overall_topic_scores_0_10.overall_chs || 5;
-              }})
+              } 
+              else if (city.lat <  54.95 && city.lng < -5.6) {
+                amountInIreland += 1;
+                ireland.overall_topic_scores_0_10.safety += city.overall_topic_scores_0_10.safety || 5;
+                ireland.overall_topic_scores_0_10.housing += city.overall_topic_scores_0_10.housing || 5;
+                ireland.overall_topic_scores_0_10.life_satisfaction += city.overall_topic_scores_0_10.life_satisfaction || 5;
+                ireland.overall_topic_scores_0_10.access_to_services += city.overall_topic_scores_0_10.access_to_services || 5;
+                ireland.overall_topic_scores_0_10.civic_engagement += city.overall_topic_scores_0_10.civic_engagement || 5;
+                ireland.overall_topic_scores_0_10.education += city.overall_topic_scores_0_10.education || 5;
+                ireland.overall_topic_scores_0_10.jobs += city.overall_topic_scores_0_10.jobs || 5;
+                ireland.overall_topic_scores_0_10.community += city.overall_topic_scores_0_10.community || 5;
+                ireland.overall_topic_scores_0_10.environment += city.overall_topic_scores_0_10.environment || 5;
+                ireland.overall_topic_scores_0_10.income += city.overall_topic_scores_0_10.income || 5;
+                ireland.overall_topic_scores_0_10.health += city.overall_topic_scores_0_10.health || 5;
+                ireland.overall_chs += city.overall_topic_scores_0_10.overall_chs || 5;
+              }
+              else if (city.lat < 53.31 && city.lng < -3.087) {
+                amountInWales += 1;
+                wales.overall_topic_scores_0_10.safety += city.overall_topic_scores_0_10.safety || 5;
+                wales.overall_topic_scores_0_10.housing += city.overall_topic_scores_0_10.housing || 5;
+                wales.overall_topic_scores_0_10.life_satisfaction += city.overall_topic_scores_0_10.life_satisfaction || 5;
+                wales.overall_topic_scores_0_10.access_to_services += city.overall_topic_scores_0_10.access_to_services || 5;
+                wales.overall_topic_scores_0_10.civic_engagement += city.overall_topic_scores_0_10.civic_engagement || 5;
+                wales.overall_topic_scores_0_10.education += city.overall_topic_scores_0_10.education || 5;
+                wales.overall_topic_scores_0_10.jobs += city.overall_topic_scores_0_10.jobs || 5;
+                wales.overall_topic_scores_0_10.community += city.overall_topic_scores_0_10.community || 5;
+                wales.overall_topic_scores_0_10.environment += city.overall_topic_scores_0_10.environment || 5;
+                wales.overall_topic_scores_0_10.income += city.overall_topic_scores_0_10.income || 5;
+                wales.overall_topic_scores_0_10.health += city.overall_topic_scores_0_10.health || 5;
+                wales.overall_chs += city.overall_topic_scores_0_10.overall_chs || 5;
+              }
+              else {
+                amountInEngland += 1;
+                england.overall_topic_scores_0_10.safety += city.overall_topic_scores_0_10.safety || 5;
+                england.overall_topic_scores_0_10.housing += city.overall_topic_scores_0_10.housing || 5;
+                england.overall_topic_scores_0_10.life_satisfaction += city.overall_topic_scores_0_10.life_satisfaction || 5;
+                england.overall_topic_scores_0_10.access_to_services += city.overall_topic_scores_0_10.access_to_services || 5;
+                england.overall_topic_scores_0_10.civic_engagement += city.overall_topic_scores_0_10.civic_engagement || 5;
+                england.overall_topic_scores_0_10.education += city.overall_topic_scores_0_10.education || 5;
+                england.overall_topic_scores_0_10.jobs += city.overall_topic_scores_0_10.jobs || 5;
+                england.overall_topic_scores_0_10.community += city.overall_topic_scores_0_10.community || 5;
+                england.overall_topic_scores_0_10.environment += city.overall_topic_scores_0_10.environment || 5;
+                england.overall_topic_scores_0_10.income += city.overall_topic_scores_0_10.income || 5;
+                england.overall_topic_scores_0_10.health += city.overall_topic_scores_0_10.health || 5;
+                england.overall_chs += city.overall_topic_scores_0_10.overall_chs || 5;
+              }
+            })
+              
               scotland.overall_topic_scores_0_10.safety /= amountInScotland;
               scotland.overall_topic_scores_0_10.housing /= amountInScotland;
               scotland.overall_topic_scores_0_10.life_satisfaction /= amountInScotland;
@@ -364,20 +475,64 @@ export default function App() {
               scotland.overall_topic_scores_0_10.income /= amountInScotland;
               scotland.overall_topic_scores_0_10.health /= amountInScotland;
               scotland.overall_chs /= amountInScotland;
-            return (
-              <Marker
-                position={[scotland.lat, scotland.lng]}
-                icon={cityPost("#" + rainbow.colorAt(scotland.overall_chs) + "99", "20px")}
-                eventHandlers={{
-                  click: () => {
-                    setCityChosen(scotland);
-                  }
-                }}>
-                <Popup>
-                  {scotland.city}
-                </Popup>
-              </Marker>
-            )
+
+              ireland.overall_topic_scores_0_10.safety /= amountInIreland;
+              ireland.overall_topic_scores_0_10.housing /= amountInIreland;
+              ireland.overall_topic_scores_0_10.life_satisfaction /= amountInIreland;
+              ireland.overall_topic_scores_0_10.access_to_services /= amountInIreland;
+              ireland.overall_topic_scores_0_10.civic_engagement /= amountInIreland;
+              ireland.overall_topic_scores_0_10.education /= amountInIreland;
+              ireland.overall_topic_scores_0_10.jobs /= amountInIreland;
+              ireland.overall_topic_scores_0_10.community /= amountInIreland;
+              ireland.overall_topic_scores_0_10.environment /= amountInIreland;
+              ireland.overall_topic_scores_0_10.income /= amountInIreland;
+              ireland.overall_topic_scores_0_10.health /= amountInIreland;
+              ireland.overall_chs /= amountInIreland;
+
+              wales.overall_topic_scores_0_10.safety /= amountInWales;
+              wales.overall_topic_scores_0_10.housing /= amountInWales;
+              wales.overall_topic_scores_0_10.life_satisfaction /= amountInWales;
+              wales.overall_topic_scores_0_10.access_to_services /= amountInWales;
+              wales.overall_topic_scores_0_10.civic_engagement /= amountInWales;
+              wales.overall_topic_scores_0_10.education /= amountInWales;
+              wales.overall_topic_scores_0_10.jobs /= amountInWales;
+              wales.overall_topic_scores_0_10.community /= amountInWales;
+              wales.overall_topic_scores_0_10.environment /= amountInWales;
+              wales.overall_topic_scores_0_10.income /= amountInWales;
+              wales.overall_topic_scores_0_10.health /= amountInWales;
+              wales.overall_chs /= amountInWales;
+
+              england.overall_topic_scores_0_10.safety /= amountInEngland;
+              england.overall_topic_scores_0_10.housing /= amountInEngland;
+              england.overall_topic_scores_0_10.life_satisfaction /= amountInEngland;
+              england.overall_topic_scores_0_10.access_to_services /= amountInEngland;
+              england.overall_topic_scores_0_10.civic_engagement /= amountInEngland;
+              england.overall_topic_scores_0_10.education /= amountInEngland;
+              england.overall_topic_scores_0_10.jobs /= amountInEngland;
+              england.overall_topic_scores_0_10.community /= amountInEngland;
+              england.overall_topic_scores_0_10.environment /= amountInEngland;
+              england.overall_topic_scores_0_10.income /= amountInEngland;
+              england.overall_topic_scores_0_10.health /= amountInEngland;
+              england.overall_chs /= amountInEngland;
+
+              const countries = [scotland, ireland, wales, england]
+              return countries.map((country) => {
+                return (
+                <Marker
+                  position={[country.lat, country.lng]}
+                  icon={cityPost("#" + rainbow.colorAt(country.overall_chs) + "99", "20px")}
+                  eventHandlers={{
+                    click: () => {
+                      setCityChosen(country);
+                    }
+                  }}>
+                  <Popup>
+                    {country.city}
+                  </Popup>
+                </Marker>
+                )
+              })
+            
           }
           )())
           )
