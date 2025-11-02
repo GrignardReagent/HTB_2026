@@ -12,7 +12,7 @@ Legend,
 } from "chart.js";
 import { Bar } from "react-chartjs-2";
 
-import data from "./api_1_analysis.json";
+import data from "./api_1_analysis_batched_2.json";
 import attentionDataSource from "./api_1.json";
 import Rainbow from "rainbowvis.js";
 
@@ -217,7 +217,7 @@ export default function App() {
             transition: "all 0.3s ease",
             textAlign: "center",
             paddingTop: "10px",
-            marginBottom: "10px",
+            marginBottom: "35px",
           }}>
             <select
               style={{padding: "8px", borderRadius: "8px", border: "1px solid #ccc", fontSize: "16px", margin: "0 10px"}}
@@ -249,7 +249,7 @@ export default function App() {
 
           {selectedView === "Sentiment" ? cities.map((city) => {
             var rainbow = new Rainbow();
-            rainbow.setNumberRange(0, 10);
+            rainbow.setNumberRange(3.5, 6.5);
             rainbow.setSpectrum("red", "green");
             return (
               <Marker
