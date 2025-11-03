@@ -1,0 +1,1 @@
+This repository contains all the codes for the ICanChangeThisLater team's challenge at HTB2026: CityPulse, a City Health Score (CHS) based on social media sentiment analysis of small UK cities and towns. 
